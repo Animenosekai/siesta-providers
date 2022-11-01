@@ -29,9 +29,9 @@ jobs:
               run: |
                   for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
                       if [[ "$file" == *"__init__.py"* ]]; then
-                          PROVIDERID = basename $(dirname $file);
+                          PROVIDERID=$(basename $(dirname $file));
                           echo Building ${PROVIDERID}
-                          python -m siesta build provider $file --output exports/${PROVIDERID}/source.siesta --metadata exports/${PROVIDERID}/metadata.siesta.json
+                          python -m siesta build provider $(dirname $file) --output exports/${PROVIDERID}/source.siesta --metadata exports/${PROVIDERID}/metadata.siesta.json --images exports/${PROVIDERID}/images
                       fi
                   done
 

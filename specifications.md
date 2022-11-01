@@ -246,6 +246,7 @@ When publishing a provider, a `metadata.siesta.json` file is created with the fo
 
 ```typescript
 interface Provider {
+    id: string
     name: string
     description: string
 

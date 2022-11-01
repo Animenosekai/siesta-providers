@@ -18,6 +18,7 @@ def desc(value: str):
 
 
 class AniList(Provider):
+    NAME = "AniList"
     DESCRIPTION: str = "Search through the thousands of animes available on AniList.co to add metadata"
 
     class MetadataProvider(BaseMetadataProvider):
