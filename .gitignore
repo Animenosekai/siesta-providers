@@ -129,3 +129,5 @@ dmypy.json
 # project organization
 playground/*
 db/*
+yuno
+db

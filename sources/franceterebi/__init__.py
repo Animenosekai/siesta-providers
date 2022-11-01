@@ -1,5 +1,6 @@
 import datetime
 import itertools
+import json
 from base64 import b64encode
 from math import exp, log
 from multiprocessing.pool import ThreadPool
@@ -8,13 +9,14 @@ from typing import Literal, Union
 
 import m3u8
 import pyuseragents
+import xmltodict
 from rich.console import Console
 from siesta.sdk.encoder.ffmpeg import FFmpeg
 from siesta.sdk.encoder.presets import Encoder, Profile
 from siesta.sdk.encoder.probe import Probe
 from siesta.sdk.providers import tv_genres as genres
-from siesta.sdk.providers.models import (Bangumi, Channel, Fragment, Provider,
-                                         Source, BaseTVProvider)
+from siesta.sdk.providers.models import (Bangumi, BaseTVProvider, Channel,
+                                         Fragment, Provider, Source)
 from siesta.server.db import SiestaDB
 from siesta.server.utils.request import Session, SharedSession
 from yuno.security.encrypt import AES
@@ -26,7 +28,7 @@ from .data import channels
 
 console = Console()
 hasher = Hasher()
-aes = AES(SiestaDB.siesta, prefix="japanterebi")
+aes = AES(SiestaDB.siesta, prefix="franceterebi")
 token_manager = TokenManager(key=SiestaDB.siesta)
 
 
@@ -49,6 +51,7 @@ class Playlist:
         self.content = content
 
         request = self.session.get(self.content.segments[0].absolute_uri, headers=self.headers)
+        request.raise_for_status()
         self.time = request.elapsed.total_seconds()
         self.first_fragment = request.content
 
@@ -121,21 +124,22 @@ class Playlist:
         return 'Playlist("{}")'.format(self.url)
 
 
-class JapanTerebi(Provider):
-    NAME = "Japan Terebi"
-    VERSION = (1, 0, 0)
-    DESCRIPTION: str = "Watch your favorite japanese shows in realtime!"
-
+class FranceTerebi(Provider):
     def __init__(self) -> None:
         """
-        Japan Terebi provides multiple Japanese TV Channels, gathering them from different sources.
+        France Terebi provides multiple French TV Channels, gathering them from different sources.
         """
         super().__init__()
 
     def on_update(self):
-        try:
-            data = fetchers.fetch(self.session)
 
+        try:
+            try:
+                with Path(__file__).parent / "data" / "bangumi.json" as f:
+                    f.write_text(json.dumps(xmltodict.parse(self.session.get("https://xmltvfr.fr/xmltv/xmltv_tnt.xml").text), ensure_ascii=False))
+            except Exception:
+                pass
+            data = fetchers.fetch(self.session)
             results = {}
             with ThreadPool(10) as main_pool:
                 def _process(channel, links):
@@ -189,8 +193,8 @@ class JapanTerebi(Provider):
             del self.db[channel]
 
     class TVProvider(BaseTVProvider):
-        def __init__(self) -> None:
-            super().__init__()
+        def __init__(self, parent: "BaseProvider") -> None:
+            super().__init__(parent)
             self.thumbnails_path = Path(__file__).parent / "thumbnails"
             self.thumbnails_path.mkdir(parents=True, exist_ok=True)
 
@@ -223,18 +227,23 @@ class JapanTerebi(Provider):
             results = []
             for channel in found:
                 channel_id = channel["_id"]
-                logo_path = Path("server/providers/japanterebi/data/logo/{}.png".format(channel_id))
+                logo_path = Path("server/providers/franceterebi/data/logo/{}.png".format(channel_id))
                 try:
                     logo_data = logo_path.read_bytes()
                     logo_data = "data:image/png;base64,{}".format(b64encode(logo_data).decode("utf-8"))
                 except Exception:
-                    logo_data = None
+                    logo_path = Path("server/providers/franceterebi/data/logo/{}.jpg".format(channel_id))
+                    try:
+                        logo_data = logo_path.read_bytes()
+                        logo_data = "data:image/jpeg;base64,{}".format(b64encode(logo_data).decode("utf-8"))
+                    except Exception:
+                        logo_data = None
                 results.append(Channel(
                     id=channel_id,
                     name=channels.DATA[channel_id]["name"],
-                    description=channels.DATA[channel_id].get("description", "There is no description for this channel"),
+                    description=channels.DATA[channel_id].get("description", None),
                     genre=channels.DATA[channel_id].get("genre", genres.OTHER),
-                    country="Japan",
+                    country="France",
                     logo=logo_data
                 ))
             return results
@@ -243,7 +252,7 @@ class JapanTerebi(Provider):
             if channel not in channels.DATA:
                 return super().get_channel(channel)
 
-            logo_path = Path("server/providers/japanterebi/data/logo/{}.png".format(channel))
+            logo_path = Path("server/providers/franceterebi/data/logo/{}.png".format(channel))
             try:
                 logo_data = logo_path.read_bytes()
                 logo_data = "data:image/png;base64,{}".format(b64encode(logo_data).decode("utf-8"))
@@ -254,7 +263,7 @@ class JapanTerebi(Provider):
                 name=channels.DATA[channel]["name"],
                 description=channels.DATA[channel].get("description", "There is no description for this channel"),
                 genre=channels.DATA[channel].get("genre", genres.OTHER),
-                country="Japan",
+                country="France",
                 logo=logo_data
             )
 
