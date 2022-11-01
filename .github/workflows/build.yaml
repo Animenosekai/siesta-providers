@@ -17,7 +17,7 @@ jobs:
               run: python -m pip install --upgrade pip
 
             - name: Installing Siesta SDK
-              run: python -m pip install .
+              run: python -m pip install git+https://github.com/Animenosekai/siesta.git
 
             - name: Get changed files in the `sources` folders
               id: changed-files
