@@ -25,7 +25,7 @@ We will be describing the different specifications of this marketplace in this f
   - [Build Info](#build-info)
     - [Metadata Attributes](#metadata-attributes)
     - [Requirements](#requirements)
-    - [Assets](#assets)
+    - [Images](#images)
     - [Build Ignore](#build-ignore)
   - [Testing](#testing)
   - [Publishing](#publishing)
@@ -186,11 +186,11 @@ Sometimes, your provider might need some additional dependencies.
 
 To declare those dependencies, you need to add a `requirements.txt` file in your provider project, just as you would with any *python* project.
 
-#### Assets
+#### Images
 
-You can add a logo to your provider by adding one in `assets/logo.png`.
+You can add a logo to your provider by adding one in `images/logo.png`.
 
-You can also add banners as `assets/banner1.png`, `assets/banner2.png`, etc.
+You can also add banners as `images/banner1.png`, `images/banner2.png`, etc.
 
 The first banner might appear in the front page of the provider market so choose it wisely!
 
@@ -200,7 +200,7 @@ When using files which aren't needed after the build step, you can add a `.build
 
 This file follows the same syntax as the normal [`.gitignore`](https://git-scm.com/docs/gitignore) files.
 
-For example, we recommend putting the `assets` folder in it, to avoid downloading all the logos and banners when installing your provider.
+For example, we recommend putting the `images` folder in it, to avoid downloading all the logos and banners when installing your provider.
 
 ### Testing
 

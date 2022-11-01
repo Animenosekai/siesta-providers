@@ -1,0 +1,49 @@
+on:
+    pull_request:
+        types: [closed]
+
+jobs:
+    build:
+        name: Provider Build 🎐
+        if: github.event.pull_request.merged == 'true'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-python@v4
+              with:
+                  python-version: "3.10"
+            - name: Updating `pip`
+            - run: python -m pip install --upgrade pip
+
+            - name: Installing Siesta SDK
+            - run: python -m pip install .
+
+            - name: Get changed files in the `sources` folders
+              id: changed-files
+              uses: tj-actions/changed-files@v34
+              with:
+                  files: sources/**
+
+            - name: Building all changed files
+              run: |
+                  for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+                      if [[ "$file" == *"__init__.py"* ]]; then
+                          PROVIDERID = basename $(dirname $file);
+                          echo Building ${PROVIDERID}
+                          python -m siesta build provider $file --output exports/${PROVIDERID}/source.siesta --metadata exports/${PROVIDERID}/metadata.siesta.json
+                      fi
+                  done
+
+            - name: Create Pull Request ✨
+              uses: peter-evans/create-pull-request@v4
+              with:
+                  commit-message: Building providers following PR${{ github.event.issue.number }}
+                  committer: Siesta <siesta.build@animenosekai.com>
+                  author: Siesta <siesta.build@animenosekai.com>
+                  signoff: true
+                  delete-branch: true
+                  title: Built the providers included in PR${{ github.event.issue.number }}
+                  body: 🍡
+                  assignees: Animenosekai
+                  branch: siesta/build
+                  branch-suffix: short-commit-hash
