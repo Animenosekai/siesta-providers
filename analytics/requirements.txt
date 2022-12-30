@@ -1,1 +1,2 @@
-flask
+git+https://github.com/Animenosekai/nasse.git
+yuno==1.1
