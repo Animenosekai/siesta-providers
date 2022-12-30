@@ -19,7 +19,7 @@ CACHE_EXPIRATION = 60  # in seconds
         "POST": "Adds an installation to the counter"
     },
     methods=["GET", "POST"],
-    dynamics=Dynamic("provider", "The provider to search for")
+    dynamics=Dynamic("provider", "The provider to search for", required=False)
 ))
 def installed(request: RequestProxy, method: str):
     _, _, provider = request.path.rpartition("/")
