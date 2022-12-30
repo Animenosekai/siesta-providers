@@ -9,7 +9,7 @@ class ProviderType(YunoDict):
 
 class Provider(YunoDict):
     _id: str  # the provider id
-    installs: list[int]
+    installs: list[int] = []
     author: str
     type: ProviderType
 

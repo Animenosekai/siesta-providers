@@ -19,6 +19,8 @@ interface SearchToken {
 }
 ```
 
+
+<!-- 
 ## Listings
 
 We use different files to list and cache the informations on the exported providers.
@@ -38,4 +40,4 @@ interface ProviderType {
     m: 0 | 1 // media
     µ: 0 | 1 // metadata
 }
-```
+``` -->
