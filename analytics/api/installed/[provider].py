@@ -3,7 +3,7 @@ import time
 from db.db import mongo
 from nasse import Dynamic, Endpoint, Nasse, RequestProxy
 
-nasse_app = Nasse("SiestaProviders", debug=True)
+nasse_app = Nasse("SiestaProviders", debug=True, log_file=None)
 
 RATE_LIMIT = {}
 INSTALL_LIMIT = 60
