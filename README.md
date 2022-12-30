@@ -1,6 +1,9 @@
 # siesta-providers
 
  A repository of Siesta providers
+ 
+> **Warning**  
+> This repository is made public for the main project's development purposes and contains things which will change in the future.
 
 ## Installing a provider
 
