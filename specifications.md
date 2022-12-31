@@ -188,9 +188,9 @@ To declare those dependencies, you need to add a `requirements.txt` file in your
 
 #### Images
 
-You can add a logo to your provider by adding one in `images/logo.png`.
+You can add a logo by creating an image titled `logo.<ext>` (`<ext>` can be any image extension, supported by [*Pillow*](https://github.com/python-pillow/Pillow))
 
-You can also add banners as `images/banner1.png`, `images/banner2.png`, etc.
+You can also add banners to a `banners` folder inside the extension folder.
 
 The first banner might appear in the front page of the provider market so choose it wisely!
 
@@ -248,7 +248,11 @@ When publishing a provider, a `metadata.siesta.json` file is created with the fo
 interface Provider {
     id: string
     name: string
-    description: string
+    catchphrase: string
+    description: string // long description
+
+    logo: boolean
+    banners: number // number of banners
 
     // version control
     version: number[]

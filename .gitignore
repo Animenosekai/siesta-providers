@@ -129,3 +129,4 @@ dmypy.json
 # project organization
 playground/*
 yuno
+db.nosync

@@ -18,6 +18,7 @@ def main(output: pathlib.Path, directory: pathlib.Path):
     directory = pathlib.Path(directory)
 
     SEARCH_LISTING = {}
+    AUTHORS_LISTING = {}
 
     for item in directory.iterdir():
         try:
@@ -29,25 +30,15 @@ def main(output: pathlib.Path, directory: pathlib.Path):
                         data = temp_provider.build_info
 
                 # Search
-                SEARCH_LISTING[normalize(data["id"])] = {
-                    "i": data["id"],
-                    "t": "p"  # provider
-                }
-
-                SEARCH_LISTING[normalize(data["name"])] = {
-                    "i": data["id"],
-                    "t": "p"  # provider
-                }
-
-                SEARCH_LISTING[normalize(data.get("author", "Siesta Community"))] = {
-                    "i": data["id"],
-                    "t": "a"  # author
-                }
+                SEARCH_LISTING[normalize(data["id"])] = data["id"]
+                SEARCH_LISTING[normalize(data["name"])] = data["id"]
+                AUTHORS_LISTING[normalize(data.get("author", "Siesta Community"))] = data.get("author", "Siesta Community")
         except Exception:
             console.print_exception()
             continue
 
     (output / "search.json").write_text(json.dumps(SEARCH_LISTING, ensure_ascii=False, separators=(",", ":")))
+    (output / "authors.json").write_text(json.dumps(AUTHORS_LISTING, ensure_ascii=False, separators=(",", ":")))
 
 
 if __name__ == "__main__":
